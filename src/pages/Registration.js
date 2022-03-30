@@ -1,46 +1,52 @@
 import React, { useState }from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfo } from "@fortawesome/free-solid-svg-icons";
 const axios = require('axios');
+const bcrypt = require('bcryptjs');
 
 function Registration(){
     const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
+	  const [password, setPassword] = useState('');
     const [passwordMatch, setPasswordMatch] = useState('');    
     
     const validateReg = async () => {
         if(email !== '' && password !== '' && passwordMatch !== ''){
             if(password === passwordMatch){
                 if(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/.test(password)){
-                    console.log(email);
                     const result = await axios.get('http://localhost:3001/validateEmail', {params : email})
-                    if(result.data){
-                        console.log('vše v pořádku');
+                    if(result.data.exists){
+                        return(true);
                     }else{
-                        console.log('email je používan')
+                        console.log('email je používan');
                     }
                 }else{
-                    console.log('heslo nesplňuje zadaná kritéria')
+                    console.log('heslo nesplňuje zadaná kritéria');
                 }
             }else{
-                console.log('hesla se neschodují')
+                console.log('hesla se neschodují');
             }
         }else{
             console.log('nejsou vyplněny všechny údaje');
         }
+        return(false);
     }
 
     const handleReg = async () => {
-        const accountParam = {
-            id: Date.now(),
-            email: email,
-            password: password,
-            passwordMatch: passwordMatch
-        }
-        if(validateReg()){
-            //const result = await axios.post('http://localhost:3001/reg', {data: accountParam})
-            //console.log(result);
-        }else{
-            console.log("noob");
-        }
+        validateReg().then(res =>{
+          if(res){
+            const accountParam = {
+              email: email,
+              password: bcrypt.hashSync(password, 10)
+            };
+            axios.post('http://localhost:3001/reg', {data: accountParam})
+            .then(result =>{
+              console.log(result);
+            });
+
+          }else{
+            console.log("registrace proběhla neúspěšně")
+          }
+        });
     }
 
     return(
@@ -62,16 +68,18 @@ function Registration(){
             
           <div className="formField">
             <label className="formFieldLabel" htmlFor="password">
-                <div className="tooltip">
-                    Heslo
-                    <ul className="tooltiptext">
-                        <li>Musí mít více než 6 znaků</li>
-                        <li>Musí obsahovat alespoň jedno velké písmeno</li>
-                        <li>Musí obsahovat alespoň jedno malé písmeno</li>
-                        <li>Musí obsahovat alespoň jednu číslovku</li>
-                    </ul>
-                </div>
+            Heslo
             </label>
+            <div className="tooltip">
+                <FontAwesomeIcon icon={faInfo}/>
+                <ul className="tooltiptext">
+                    <li>Musí mít více než 6 znaků</li>
+                    <li>Musí obsahovat alespoň jedno velké písmeno</li>
+                    <li>Musí obsahovat alespoň jedno malé písmeno</li>
+                    <li>Musí obsahovat alespoň jednu číslovku</li>
+                </ul>
+            </div>
+            
             <input
               type="password"
               id="password"

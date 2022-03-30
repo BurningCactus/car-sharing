@@ -1,12 +1,44 @@
-import React, { useEffect, useState }from "react";
+import React, { useState }from "react";
+const axios = require('axios');
+const bcrypt = require('bcryptjs');
 
 function Login(){
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');   
+	  const [email, setEmail] = useState('');
+	  const [password, setPassword] = useState('');   
     
     const handleLogin = () =>{
-        console.log(email , password)
+      validateLog().then(res =>{
+        if(res){
+          //lognout 
+        }else{
+          console.log("Přihlášení nebylo úspěšné");
+        }
+      });
     }
+
+    const validateLog = async () =>{
+        if(email !== '' && password !== ''){
+          //jestli email je v databázi 
+          const result = await axios.get('http://localhost:3001/validateEmail', {params : email});
+          const exists = !result.data.exists;
+          const hashedPassword = result.data.res.password;
+          if(exists){
+              console.log(password, hashedPassword);
+             if(bcrypt.compareSync(password, hashedPassword)){
+               console.log("budete zaregistrováni");  
+               return(true);
+             }else{
+               console.log("heslo není správné");
+             }
+          }else{
+            console.log('email není zaregistrován')
+          }
+        }else{
+          console.log("nejsou vyplněny všechny údaje");
+        }
+        return(false);
+    }
+
     return(
         <div className="formCenter">
         <form className="formFields" onSubmit={(evt) => evt.preventDefault()}>
@@ -39,7 +71,7 @@ function Login(){
           </div>
 
           <div className="formField">
-            <button className="formFieldButton" onClick={handleLogin()}>Přihlásit se</button>
+            <button className="formFieldButton" onClick={() => handleLogin()}>Přihlásit se</button>
           </div>
         </form>
       </div>

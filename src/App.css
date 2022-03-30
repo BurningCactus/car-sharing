@@ -5,12 +5,12 @@
 }
 
 .appAside {
-  width: 50%;
+  width: 40%;
   background-color: #7640ff;
 }
 
 .appForm {
-  width: 50%;
+  width: 60%;
   background-color: #12130f;
   padding: 25px 40px;
   overflow: auto;
@@ -151,9 +151,10 @@
 .tooltip {
   position: absolute;
   display: inline-block;  
-  margin-top: -20px!important;
+  margin-top: 6px!important;
   width: 45px;
   height: 20px;
+  margin-left: 27%;
 }
 
 .tooltiptext {
@@ -165,7 +166,7 @@
   padding: 5px 0;
   border-radius: 6px;
   bottom: 65px;
-  right: 420px;
+  left: 20px;
   position: relative;
   display: block;
   text-transform: none;
